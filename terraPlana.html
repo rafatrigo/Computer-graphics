@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Define o tipo de documento -->
+    <meta charset="utf-8">
+    <!-- Define o título da página -->
+    <title>Three.js Exemplo</title>
+    <style>
+        /* Define o estilo da página HTML */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <!-- Inclui a biblioteca Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+</head>
+
+<body>
+    <script type="module">
+        // Cria a cena Three.js
+        var scene = new THREE.Scene();
+
+        // Cria a câmera Three.js com visão perspectiva
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // Cria o renderizador Three.js com suporte a WebGL
+        var renderer = new THREE.WebGLRenderer({ antialias: true});
+
+        //rencer shadow
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+
+        // Define o tamanho do renderizador para o tamanho da janela do navegador
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Adiciona o elemento DOM do renderizador à página HTML
+        document.body.appendChild(renderer.domElement);
+
+        //ambient light
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.03);
+        scene.add(ambientLight);
+
+        //create a light
+        const light = new THREE.PointLight( 0xffffff, 6, 0, 1.5 );
+        light.position.set(0, 2, 6);
+
+        //create the sun
+        var sunGeometry = new THREE.SphereGeometry(0.7, 32, 24);
+        const texture_sun = new THREE.TextureLoader().load('./assets/2k_sun.jpg');
+        var sunMaterial = new THREE.MeshBasicMaterial({ map:texture_sun});
+        var sun = new THREE.Mesh(sunGeometry, sunMaterial);
+
+        //create the moon
+        var moonGeometry = new THREE.SphereGeometry(0.7, 12, 12);
+        const texture_moon = new THREE.TextureLoader().load('./assets/2k_moon.jpg');
+        var moonMaterial = new THREE.MeshStandardMaterial({ map:texture_moon });
+        var moon = new THREE.Mesh(moonGeometry, moonMaterial);
+        moon.castShadow = true;
+        moon.receiveShadow = true;
+
+        // create the earth
+        var earthGeometry = new THREE.CircleGeometry(11,42);
+        const texture_earth = new THREE.TextureLoader().load('./assets/flat-earth.png');
+        var earthMaterial = new THREE.MeshStandardMaterial({ map:texture_earth });
+        var earth = new THREE.Mesh(earthGeometry, earthMaterial);
+        earth.castShadow = true;
+        earth.receiveShadow = true;
+
+        //create the dome
+        // var domeGeometry = new THREE.SphereGeometry(11, 42, 42);
+        // // const texture_dome = new THREE.TextureLoader().load('./assets/8k_stars_milky_way.jpg');
+        // var domeMaterial = new THREE.MeshStandardMaterial({ color: 0x03fcf0, transparent: true, opacity: 0.35});
+        // var dome = new THREE.Mesh(domeGeometry, domeMaterial);
+        // dome.receiveShadow = true;
+
+        //create an object to be the sun and moon reference for the orbit
+        var ReferenceGeometry = new THREE.BoxGeometry();
+        var ReferenceMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
+        var Reference = new THREE.Mesh(ReferenceGeometry, ReferenceMaterial);
+
+        //create the background
+        var starrySkyGeometry = new THREE.PlaneGeometry(819, 409);
+        const texture_starrySky = new THREE.TextureLoader().load('./assets/8k_stars_milky_way.jpg');
+        var starrySkyMaterial = new THREE.MeshBasicMaterial({ map:texture_starrySky, opacity: 0.3, transparent: true});
+        var starrySky = new THREE.Mesh(starrySkyGeometry, starrySkyMaterial);
+
+
+        //add objects to the scene
+        scene.add(earth);
+        scene.add(Reference);
+        scene.add(starrySky);
+
+        //add light, sun and moon to the reference
+        Reference.add(sun);
+        Reference.add(moon);
+        Reference.add(light);
+
+        //add the dome to the earth
+        // earth.add(dome);
+
+        //earth rotation
+        //-90 is the angle of the rotation
+        earth.rotation.x = -90 / 180 * Math.PI;
+
+        //sun position
+        sun.position.z = 6;
+        sun.position.y = 2;
+
+        //moon position
+        moon.position.z = -6;
+        moon.position.y = 2;
+
+        //background position
+        starrySky.position.z = -130;
+        starrySky.position.y = -140;
+        starrySky.rotation.x = 0.98 / 180 * Math.PI;
+
+        //camera position
+        camera.position.z = 15;
+        camera.position.y = 10;
+        camera.lookAt(0, 0, 0);
+
+        //Cria um eixo de coordenadas
+        // const axesHelper = new THREE.AxesHelper(20);
+        // axesHelper.setColors(0x0064FF, 0x08FF00, 0xFF0000)
+        // scene.add(axesHelper);
+
+        // Define o loop de animação Three.js
+        function animate() {
+
+            // Solicita a atualização da animação na próxima renderização do navegador
+            requestAnimationFrame(animate);
+
+            //sun and moon revolution
+            Reference.rotation.y += 0.01;
+
+            // Renderiza a cena Three.js com a câmera definida
+            renderer.render(scene, camera);
+        }
+
+        // Inicia a animação
+        animate();
+    </script>
+</body>
+
+</html>

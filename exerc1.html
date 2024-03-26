@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Define o tipo de documento -->
+    <meta charset="utf-8">
+    <!-- Define o título da página -->
+    <title>Three.js Exemplo</title>
+    <style>
+        /* Define o estilo da página HTML */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <!-- Inclui a biblioteca Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+</head>
+
+<body>
+    <script>
+        // Cria a cena Three.js
+        var scene = new THREE.Scene();
+
+        // Cria a câmera Three.js com visão perspectiva
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // Cria o renderizador Three.js com suporte a WebGL
+        var renderer = new THREE.WebGLRenderer();
+
+        // Define o tamanho do renderizador para o tamanho da janela do navegador
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Adiciona o elemento DOM do renderizador à página HTML
+        document.body.appendChild(renderer.domElement);
+
+        // Cria um eixo de coordenadas
+        const axesHelper = new THREE.AxesHelper(5);
+
+        // Define as cores dos eixos de coordenadas
+        //x - azul y - verde z - vermelho
+        axesHelper.setColors(0x0064FF, 0x08FF00, 0xFF0000)
+        // Adiciona um eixo de coordenadas à cena Three.js        
+        scene.add(axesHelper);
+
+        // Cria a geometria Three.js para o objeto mesh
+        var geometry = new THREE.SphereGeometry();
+
+        // Cria o material Three.js para o objeto mesh
+        var material = new THREE.MeshBasicMaterial({ color: 0xFF338D });
+
+        // Cria o objeto mesh Three.js com a geometria e o material definidos
+        var sphere = new THREE.Mesh(geometry, material);
+
+        //cria cubo azul
+        var geometryA = new THREE.BoxGeometry();
+
+        //muda a posição do cubo azul
+        geometryA.translate(-4, 0, 0);
+
+        var materialA = new THREE.MeshBasicMaterial({ color: 0x0064FF });
+        var cubeA = new THREE.Mesh(geometryA, materialA);
+
+        //cria plano verde
+        var geometryB = new THREE.PlaneGeometry();
+
+        //muda a posição do plano verde
+        geometryB.translate(1, 1, 0);
+
+        //muda a escalada do plano verde
+        geometryB.scale(2.5, 2, 1);
+
+        var materialB = new THREE.MeshBasicMaterial({ color: 0x08FF00 });
+        var plane = new THREE.Mesh(geometryB, materialB);
+
+
+        // Adiciona o objeto mesh à cena Three.js
+        scene.add(sphere);
+        scene.add(cubeA);
+        scene.add(plane);
+
+        //rotaciona o cubo azul
+        cubeA.rotation.x += 1.2;
+
+        // Define a posição da câmera Three.js
+        camera.position.z = 3;
+        camera.position.x = 3;
+        camera.position.y = 3;
+
+        // Define o ponto para onde a câmera está olhando
+        camera.lookAt(0, 0, 0);
+
+        // Define o loop de animação Three.js
+        function animate() {
+
+            // Solicita a atualização da animação na próxima renderização do navegador
+            requestAnimationFrame(animate);
+
+            
+            // Renderiza a cena Three.js com a câmera definida
+            renderer.render(scene, camera);
+        }
+
+        // Inicia a animação
+        animate();
+    </script>
+</body>
+
+</html>

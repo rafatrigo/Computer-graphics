@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Define o tipo de documento -->
+    <meta charset="utf-8">
+    <!-- Define o título da página -->
+    <title>Three.js Exemplo</title>
+    <style>
+        /* Define o estilo da página HTML */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <!-- Inclui a biblioteca Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@latest/build/three.min.js"></script>
+</head>
+
+<body>
+    <script>
+
+        function checkColision(sphereBox, plane1Box, plane2Box) {
+
+            if (sphereBox.intersectsBox(plane1Box) || sphereBox.intersectsBox(plane2Box)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // Cria a cena Three.js
+        var scene = new THREE.Scene();
+
+        // Cria a câmera Three.js com visão perspectiva
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // Cria o renderizador Three.js com suporte a WebGL
+        var renderer = new THREE.WebGLRenderer();
+
+        // Define o tamanho do renderizador para o tamanho da janela do navegador
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Adiciona o elemento DOM do renderizador à página HTML
+        document.body.appendChild(renderer.domElement);
+
+
+        // Cria a geometria Three.js para o objeto mesh
+        var geometryEsfera = new THREE.SphereGeometry(0.5);
+
+        // Cria o material Three.js para o objeto mesh
+        var material = new THREE.MeshBasicMaterial({ color: 0xFF0000 });
+
+        // Cria o objeto mesh Three.js com a geometria e o material definidos
+        var sphere = new THREE.Mesh(geometryEsfera, material);
+
+
+        var geometryPane1 = new THREE.PlaneGeometry(1, 7);
+        geometryPane1.translate(-7, 0, 0)
+
+        var PlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x08FF00 });
+
+        var plane1 = new THREE.Mesh(geometryPane1, PlaneMaterial);
+
+        var geometryPlane2 = new THREE.PlaneGeometry(1, 7)
+        geometryPlane2.translate(7, 0, 0)
+
+        var plane2 = new THREE.Mesh(geometryPlane2, PlaneMaterial);
+
+
+        var sphereBox = new THREE.Sphere(sphere.position, 0.5);
+        var plane1Box = new THREE.Box3().setFromObject(plane1);
+        var plane2Box = new THREE.Box3().setFromObject(plane2);
+
+        //sphereBox.copy(sphere.geometry.boundingSphere).applyMatrix4(sphere.matrixWorld);
+        plane1Box.copy(plane1.geometry.boundingBox).applyMatrix4(plane1.matrixWorld);
+        plane2Box.copy(plane2.geometry.boundingBox).applyMatrix4(plane2.matrixWorld);
+
+        scene.add(sphere);
+        scene.add(plane1);
+        scene.add(plane2);
+
+
+
+        camera.position.z = 10;
+
+
+        var velocity = 0.06;
+
+        // Define o loop de animação Three.js
+        function animate() {
+
+            // Solicita a atualização da animação na próxima renderização do navegador
+            requestAnimationFrame(animate);
+
+
+
+            if (checkColision(sphereBox, plane1Box, plane2Box)) {
+                velocity = -velocity;
+            }
+
+            sphere.position.x += velocity;
+
+            // Renderiza a cena Three.js com a câmera definida
+            renderer.render(scene, camera);
+        }
+
+        // Inicia a animação
+        animate();
+    </script>
+</body>
+
+</html>
